@@ -1,0 +1,11 @@
+.DS_Store
+.vercel
+node_modules/
+.venv-i18n/
+__pycache__/
+*.pyc
+scripts/.i18n-generated-locales.js.txt
+scripts/.i18n-locale-cache.json
+*.log
+.env
+.env.*

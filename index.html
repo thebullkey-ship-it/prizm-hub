@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="hub">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prizm Hub — Аналитический портал</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="src/css/main.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('prizm-theme');
+        if (t === 'hub' || t === 'slate' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        var lang = localStorage.getItem('prizm-lang');
+        var HTML_LANG = { ru: 'ru', enUS: 'en', id: 'id', de: 'de', es: 'es', fr: 'fr', pt: 'pt', by: 'be', uk: 'uk', bn: 'bn', hi: 'hi', el: 'el', it: 'it', ko: 'ko', zhCN: 'zh-Hans' };
+        var hl = !lang ? 'ru' : HTML_LANG[lang] || 'en';
+        document.documentElement.setAttribute('lang', hl);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <div id="cors-banner" class="cors-banner" style="display:none">
+    <div class="cors-banner__inner">
+      <span class="cors-banner__icon">⚠️</span>
+      <span class="cors-banner__text" data-i18n-html="cors.text">
+        Ошибка CORS: откройте портал через локальный сервер, а не через <code>file://</code>.
+        Выполните: <code>node server.js</code> в директории проекта, затем перейдите на
+        <a href="http://localhost:8181" target="_blank">http://localhost:8181</a>
+      </span>
+      <button type="button" class="cors-banner__close" onclick="document.getElementById('cors-banner').style.display='none'" data-i18n-aria="cors.close" aria-label="Закрыть предупреждение">✕</button>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" data-i18n-aria="sidebar.aria" aria-label="Основное меню">
+      <div class="sidebar__brand">
+        <img
+          class="sidebar__logo-img"
+          src="assets/prizm-logo.png"
+          width="64"
+          height="64"
+          alt="PRIZM"
+          decoding="async"
+        />
+        <div class="sidebar__space-logo" aria-hidden="true">
+          <img
+            class="sidebar__space-logo-img"
+            src="https://static.tildacdn.com/tild3934-3537-4566-a463-356561666432/Prizm-space-logo-bla.svg"
+            width="200"
+            height="28"
+            alt=""
+            decoding="async"
+          />
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <div class="sidebar__section-label" data-i18n="nav.sectionStats">Статистика</div>
+        <a href="#/stats/general" class="sidebar-link" data-nav-route="/stats/general">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.statsGeneral">Общая</span>
+        </a>
+        <a href="#/stats/blocks" class="sidebar-link" data-nav-route="/stats/blocks">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.statsBlocks">Блоки</span>
+        </a>
+        <a href="#/stats/transactions" class="sidebar-link" data-nav-route="/stats/transactions">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.statsTransactions">Транзакции</span>
+        </a>
+        <a href="#/exchanges" class="sidebar-link" data-nav-route="/exchanges">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.exchanges">Обменники</span>
+        </a>
+        <a href="#/top100" class="sidebar-link" data-nav-route="/top100">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2 2 0 0 1-2-2v-1M6 4h1M6 14h1m-1 5h1M6 9h1m9-5h2.5a2 2 0 0 1 2 2v1M18 4h1M6 19h1m12 0h1M18 14h1m0-5h1"/><path d="M12 2v20"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.top100">Топ-100</span>
+        </a>
+        <a href="#/paramining" class="sidebar-link" data-nav-route="/paramining">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.paramining">Парамайнинг</span>
+        </a>
+        <a href="#/paracalc" class="sidebar-link" data-nav-route="/paracalc">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.paracalc">Паракалькулятор</span>
+        </a>
+
+        <div class="sidebar__section-label" data-i18n="nav.sectionExplorer">Обозреватель</div>
+        <a href="#/dashboard" class="sidebar-link" data-nav-route="/dashboard">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.dashboard">Дашборд</span>
+        </a>
+        <a href="#/explorer" class="sidebar-link" data-nav-route="/explorer">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.explorer">Эксплорер</span>
+        </a>
+        <a href="#/accounts" class="sidebar-link" data-nav-route="/accounts">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.accounts">Аккаунты</span>
+        </a>
+        <a href="#/transactions" class="sidebar-link" data-nav-route="/transactions">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.transactions">Транзакции</span>
+        </a>
+        <a href="#/forging" class="sidebar-link" data-nav-route="/forging">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.forging">Форжинг</span>
+        </a>
+        <a href="#/network" class="sidebar-link" data-nav-route="/network">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.network">Сеть</span>
+        </a>
+        <a href="#/messages" class="sidebar-link" data-nav-route="/messages">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.messages">Сообщения</span>
+        </a>
+        <a href="#/about" class="sidebar-link" data-nav-route="/about">
+          <svg class="sidebar-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span class="sidebar-link__text" data-i18n="nav.about">О PRIZM</span>
+        </a>
+      </nav>
+      <div class="sidebar__footer">
+        <label class="sidebar__lang">
+          <span class="sidebar__lang-icon" aria-hidden="true">🌐</span>
+          <select id="lang-select" class="sidebar__lang-select" data-i18n-aria="lang.label" aria-label="Язык">
+            <option value="id">Bahasa Indonesia</option>
+            <option value="de">Deutsch</option>
+            <option value="enUS">English (US)</option>
+            <option value="es">Español (international)</option>
+            <option value="fr">Français</option>
+            <option value="pt">Português</option>
+            <option value="by">Беларускі</option>
+            <option value="ru" selected>Русский</option>
+            <option value="uk">Українська</option>
+            <option value="bn">বাংলা</option>
+            <option value="hi">हिन्दी</option>
+            <option value="el">Ελληνικά</option>
+            <option value="it">Italiano</option>
+            <option value="ko">한국어</option>
+            <option value="zhCN">中文（简体）</option>
+          </select>
+        </label>
+        <span class="sidebar__version text-xs text-faint">v1.0</span>
+      </div>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="App.closeMobileMenu()" aria-hidden="true"></div>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <button type="button" class="sidebar-toggle" id="sidebar-toggle" onclick="App.toggleMobileMenu()" data-i18n-aria="mobile.openMenu" aria-label="Открыть меню">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="app-topbar__fill"></div>
+        <div class="app-topbar__search">
+          <input type="text" id="global-search" class="search-input" data-i18n-placeholder="search.placeholder" placeholder="Блок / TX / Адрес..." />
+          <button type="button" class="search-btn" onclick="App.handleGlobalSearch()" data-i18n-aria="search.aria" aria-label="Поиск">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="status-indicator" id="status-indicator">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-label" id="status-label" data-i18n="status.connecting">Подключение...</span>
+        </div>
+        <button type="button" class="theme-toggle" id="theme-toggle" onclick="App.cycleTheme()" data-i18n-title="theme.title" data-i18n-aria="theme.aria" title="Тема" aria-label="Переключить тему оформления">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+        </button>
+      </header>
+
+      <main class="main-content" id="router-outlet">
+        <div class="page-loading">
+          <div class="spinner"></div>
+          <p data-i18n="common.loadingPortal">Загрузка портала...</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay" onclick="App.closeModal()">
+    <div class="modal" id="modal" onclick="event.stopPropagation()">
+      <div class="modal__header">
+        <h3 class="modal__title" id="modal-title" data-i18n="modal.details">Детали</h3>
+        <button type="button" class="modal__close" onclick="App.closeModal()" data-i18n-aria="modal.close" aria-label="Закрыть">✕</button>
+      </div>
+      <div class="modal__body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="src/js/i18n.js"></script>
+  <script src="src/js/utils.js"></script>
+  <script src="src/js/api.js"></script>
+  <script src="src/js/pages/dashboard.js"></script>
+  <script src="src/js/pages/explorer.js"></script>
+  <script src="src/js/pages/accounts.js"></script>
+  <script src="src/js/pages/transactions.js"></script>
+  <script src="src/js/pages/forging.js"></script>
+  <script src="src/js/pages/network.js"></script>
+  <script src="src/js/pages/messages.js"></script>
+  <script src="src/js/about-en.js"></script>
+  <script src="src/js/pages/about.js"></script>
+  <script src="src/js/pages/top100.js"></script>
+  <script src="src/js/pages/stats-general.js"></script>
+  <script src="src/js/pages/stats-blocks.js"></script>
+  <script src="src/js/pages/stats-transactions.js"></script>
+  <script src="src/js/pages/exchanges.js"></script>
+  <script src="src/js/pages/paramining.js"></script>
+  <script src="src/js/pages/paracalc.js"></script>
+  <script src="src/js/router.js"></script>
+  <script src="src/js/app.js"></script>
+</body>
+</html>

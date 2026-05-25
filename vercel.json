@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "api/prizm.js": { "maxDuration": 60 }
+  },
+  "rewrites": [
+    { "source": "/prizm", "destination": "/api/prizm" },
+    { "source": "/prizm-node", "destination": "/api/prizm-node" },
+    { "source": "/ext-api/(.*)", "destination": "/api/ext-api/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    }
+  ]
+}
