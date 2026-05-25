@@ -251,6 +251,32 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── /baze/* — historical stats JSON (no SPA fallback) ───────────────────────
+  if (parsed.pathname.startsWith('/baze/')) {
+    const rel = parsed.pathname.replace(/^\/baze\/?/, '');
+    const bazePath = path.join(__dirname, 'baze', rel);
+    if (!bazePath.startsWith(path.join(__dirname, 'baze'))) {
+      res.writeHead(403); res.end('Forbidden'); return;
+    }
+    fs.stat(bazePath, (err, stat) => {
+      if (err || !stat.isFile()) {
+        res.writeHead(404, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+        res.end(JSON.stringify({ error: 'baze file not found', path: rel }));
+        return;
+      }
+      fs.readFile(bazePath, (err2, data) => {
+        if (err2) { res.writeHead(500); res.end('Error'); return; }
+        res.writeHead(200, {
+          'Content-Type': 'application/json; charset=utf-8',
+          ...CORS_HEADERS,
+          'Cache-Control': 'no-cache',
+        });
+        res.end(data);
+      });
+    });
+    return;
+  }
+
   // ── Static file server ─────────────────────────────────────────────────────
   let filePath = path.join(__dirname, parsed.pathname === '/' ? 'index.html' : parsed.pathname);
 
@@ -259,7 +285,12 @@ const server = http.createServer((req, res) => {
   }
 
   fs.stat(filePath, (err, stat) => {
-    if (err || !stat.isFile()) filePath = path.join(__dirname, 'index.html');
+    if (err || !stat.isFile()) {
+      if (parsed.pathname.startsWith('/api/')) {
+        res.writeHead(404); res.end('Not found'); return;
+      }
+      filePath = path.join(__dirname, 'index.html');
+    }
     const ext  = path.extname(filePath).toLowerCase();
     const mime = MIME[ext] || 'application/octet-stream';
     fs.readFile(filePath, (err2, data) => {

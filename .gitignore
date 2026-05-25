@@ -2,6 +2,9 @@
 .vercel
 node_modules/
 .venv-i18n/
+# Large historical JSON (~65MB) — use scripts/sync-baze.sh on deploy
+baze/*
+!baze/README.md
 __pycache__/
 *.pyc
 scripts/.i18n-generated-locales.js.txt

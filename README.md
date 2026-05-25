@@ -34,6 +34,18 @@ node server.js
 
 Маршруты `/prizm` и `/prizm-node` на Vercel перенаправляются на этот upstream по HTTPS. `/ext-api/*` ходит напрямую на `api.prizm.vip` (443).
 
+## Историческая статистика (`baze/`)
+
+Таблицы на страницах «Общая», «Блоки», «Транзакции», «Обменники», «Парамайнинг» читают JSON из `/baze/` (логика портала с `daysUntilStartEpoch = 43308`, генезис `TE8NB3VMJJQH5NYJB`).
+
+Данные синхронизируются с [paraindicator.top](https://paraindicator.top):
+
+```bash
+./scripts/sync-baze.sh
+```
+
+На Render это выполняется при сборке (см. `render.yaml`). Локально после sync — ~65 MB в `baze/`. Подробнее: [baze/README.md](baze/README.md).
+
 ## Структура
 
 - `index.html`, `src/` — фронтенд

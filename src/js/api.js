@@ -225,9 +225,9 @@ const API = (() => {
   const STATS_PATHS = {
     general:      ['/stats_general.json', '/general.json', '/prizm_stats_general.json'],
     blocks:       ['/stats_blocks.json', '/block_stats.json'],
-    transactions: ['/stats_transactions.json', '/tx_stats.json'],
     paramining:   ['/stats_paramining.json', '/paramining_stats.json'],
     exchanges:    ['/exchanges.json', '/exchangers.json'],
+    transactions: ['/stats_transactions.json', '/tx_stats.json'],
   };
 
   async function tryStatsEndpoint(key) {

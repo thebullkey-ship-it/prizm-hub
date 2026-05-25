@@ -3,7 +3,7 @@ services:
     name: prizm-hub-proxy
     runtime: node
     plan: free
-    buildCommand: echo "no build"
+    buildCommand: chmod +x scripts/sync-baze.sh && ./scripts/sync-baze.sh
     startCommand: node server.js
     healthCheckPath: /
     envVars:

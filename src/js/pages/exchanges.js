@@ -1,33 +1,47 @@
-/* =====================================================
-   PRIZM Hub — Обменники
-   ===================================================== */
-
+/* PRIZM Hub — Обменники */
 const PageExchanges = (() => {
+  let unbind = null;
+
+  function paint() {
+    const root = document.getElementById('stats-ex-root');
+    if (!root || !StatsEngine.state.bazeAvailable) return;
+    const { exchangers, draw } = StatsEngine.renderExchangers();
+    const t = I18n.t.bind(I18n);
+    const exTable = (titleKey, rows) => `
+      <div class="card ${titleKey === 'exchanges.drawTitle' ? 'section-gap' : ''}">
+        <div class="card__header"><span class="card__title">${Utils.esc(t(titleKey))}</span></div>
+        <div class="stats-table-wrap">
+          <table class="stats-table">
+            <thead>
+              <tr><th>${Utils.esc(t('exchanges.th.name'))}</th><th>${Utils.esc(t('exchanges.th.balance'))}</th><th>${Utils.esc(t('exchanges.th.income'))}</th><th>${Utils.esc(t('exchanges.th.month'))}</th><th>%</th><th>${Utils.esc(t('exchanges.th.out'))}</th></tr>
+            </thead>
+            <tbody>${StatsUI.tableBody(rows, 6)}</tbody>
+          </table>
+        </div>
+      </div>`;
+    root.innerHTML = exTable('exchanges.cardTitle', exchangers)
+      + (draw.length > 1 ? exTable('exchanges.drawTitle', draw) : '');
+  }
+
   async function render() {
     const outlet = document.getElementById('router-outlet');
-    const remote = await API.tryStatsEndpoint('exchanges');
-
-    const list = Array.isArray(remote?.items)
-      ? remote.items.map((x) => `<li>${Utils.esc(typeof x === 'string' ? x : JSON.stringify(x))}</li>`).join('')
-      : '';
-
     const t = I18n.t.bind(I18n);
+    await StatsEngine.ensureReady();
+    const st = StatsEngine.state;
+
     outlet.innerHTML = `
       <div class="page-header">
         <h1 class="page-header__title">${Utils.esc(t('exchanges.title'))}</h1>
         <p class="page-header__subtitle">${Utils.esc(t('exchanges.subtitle'))}</p>
       </div>
-      ${Utils.statsApiPendingNote()}
-      <div class="card">
-        ${remote && list
-          ? `<ul class="text-sm text-muted" style="padding-left:1.2rem;line-height:1.8">${list}</ul>`
-          : `<p class="text-muted text-sm">${t('exchanges.pending')}</p>`}
-        ${remote && typeof remote === 'object' && !list
-          ? `<pre class="text-xs mono mt-4" style="overflow:auto;max-height:240px">${Utils.esc(JSON.stringify(remote, null, 2))}</pre>`
-          : ''}
-      </div>`;
+      ${StatsUI.dateRangeBar(st)}
+      ${st.bazeAvailable ? '' : StatsUI.dataMissingBanner()}
+      <div id="stats-ex-root"></div>`;
 
-    return null;
+    StatsUI.bindDateBar(st, () => { StatsEngine.clearRendered(); paint(); });
+    if (st.bazeAvailable) paint();
+    unbind = StatsEngine.onRange(() => paint());
+    return () => { if (unbind) unbind(); };
   }
 
   return { render };
