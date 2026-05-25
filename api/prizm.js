@@ -1,4 +1,10 @@
 const { proxyPrizmRequest, CORS_HEADERS } = require('../lib/prizm-proxy');
+const {
+  getUpstreamBase,
+  proxyViaUpstream,
+  sendProxyResponse,
+  sendUpstreamMissing,
+} = require('../lib/upstream-proxy');
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -19,6 +25,21 @@ module.exports = async function handler(req, res) {
       req.on('end', () => resolve(chunks.length ? Buffer.concat(chunks) : null));
       req.on('error', reject);
     });
+  }
+
+  if (getUpstreamBase()) {
+    try {
+      const result = await proxyViaUpstream(reqPath, req.method || 'GET', bodyBuf);
+      return sendProxyResponse(res, result);
+    } catch (err) {
+      res.status(502).setHeader('Content-Type', 'application/json');
+      Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  if (process.env.VERCEL) {
+    return sendUpstreamMissing(res);
   }
 
   const result = await proxyPrizmRequest(reqPath, req.method || 'GET', bodyBuf);

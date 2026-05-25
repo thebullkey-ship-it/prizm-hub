@@ -11,7 +11,7 @@ const fs    = require('fs');
 const path  = require('path');
 const url   = require('url');
 
-const PORT     = parseInt(process.argv[2] || '8181');
+const PORT     = parseInt(process.argv[2] || process.env.PORT || '8181', 10);
 const EXT_HOST = 'api.prizm.vip';
 
 // ── Peer list ────────────────────────────────────────────────────────────────

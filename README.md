@@ -12,13 +12,27 @@ node server.js
 
 ## Деплой на Vercel
 
-Репозиторий подключите в [Vercel Dashboard](https://vercel.com/new) или выполните:
+Фронтенд: [prizm-hub.vercel.app](https://prizm-hub.vercel.app)
 
-```bash
-vercel --prod
-```
+**Важно:** Vercel serverless не может подключаться к нодам PRIZM на порту `9976` (разрешены только 80/443). Нужен внешний прокси:
 
-Маршруты `/prizm`, `/prizm-node` и `/ext-api/*` обслуживаются serverless-функциями в `api/`.
+### 1. Прокси на Render (бесплатно)
+
+1. [render.com](https://render.com) → **New** → **Blueprint** / **Web Service** из репозитория `prizm-hub`
+2. Используйте `render.yaml` или команду запуска: `node server.js`
+3. Скопируйте URL сервиса, например `https://prizm-hub-proxy.onrender.com`
+
+### 2. Переменная на Vercel
+
+В проекте **prizm-hub** → **Settings** → **Environment Variables**:
+
+| Name | Value |
+|------|--------|
+| `PRIZM_UPSTREAM` | `https://ваш-сервис.onrender.com` |
+
+Пересоберите деплой (**Deployments** → **Redeploy**).
+
+Маршруты `/prizm` и `/prizm-node` на Vercel перенаправляются на этот upstream по HTTPS. `/ext-api/*` ходит напрямую на `api.prizm.vip` (443).
 
 ## Структура
 
